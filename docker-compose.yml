@@ -1,0 +1,126 @@
+services:
+  librechat:
+    image: ghcr.io/danny-avila/librechat:main
+    container_name: librechat
+    depends_on:
+      - mongo
+      - redis
+      - ollama
+      - qdrant
+    environment:
+      NODE_ENV: production
+      MONGO_URI: mongodb://mongo:27017/librechat
+      REDIS_URI: redis://redis:6379
+      NEXTAUTH_SECRET: your-random-secret
+      NEXTAUTH_URL: http://librechat:3080
+
+      OLLAMA_API_HOST: http://ollama:11434
+      OPENROUTER_API_KEY: your-openrouter-key
+      ENABLED_PROVIDERS: ollama,openrouter
+
+      FILE_SUPPORT_ENABLED: "true"
+      VOICE_SUPPORT_ENABLED: "true"
+      RAG_ENABLED: "true"
+      QDRANT_URL: http://qdrant:6333
+
+      GOOGLE_CLIENT_ID: your-google-client-id
+      GOOGLE_CLIENT_SECRET: your-google-client-secret
+
+    volumes:
+      - librechat_uploads:/app/public/uploads
+    networks:
+      - internal
+    restart: always
+
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - internal
+    restart: always
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+    networks:
+      - internal
+    restart: always
+
+  redis:
+    image: redis:7
+    container_name: redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+    restart: always
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    networks:
+      - internal
+    restart: always
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    volumes:
+      - ollama_models:/root/.ollama
+    networks:
+      - internal
+    restart: always
+
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - internal
+    restart: always
+
+  qdrant-ui:
+    image: zilliz/attu
+    container_name: qdrant-ui
+    environment:
+      QDRANT_URL: http://qdrant:6333
+    networks:
+      - internal
+    restart: always
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    depends_on:
+      - librechat
+    ports:
+      - "80:80"      # HTTP
+      - "81:81"      # Admin UI
+      - "443:443"    # HTTPS
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - internal
+    restart: always
+
+volumes:
+  librechat_uploads:
+  mongo_data:
+  redis_data:
+  ollama_models:
+  qdrant_data:
+  npm_data:
+  npm_letsencrypt:
+
+networks:
+  internal:
+    driver: bridge
