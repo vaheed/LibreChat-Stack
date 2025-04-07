@@ -82,15 +82,24 @@ docker compose up -d
 
 ### 🌐 5. Access Web Interfaces
 
-Once running, go to:
+🚀 Nginx Proxy Manager
+Once it's up:
 
-| Service            | URL (default)              |
-|--------------------|----------------------------|
-| LibreChat (AI Chat) | http://your-server-ip      |
-| Nginx Admin Panel   | http://your-server-ip:81   |
-| MongoDB UI          | http://your-server-ip (set proxy) |
-| Redis Commander     | http://your-server-ip (set proxy) |
-| Qdrant UI (Attu)    | http://your-server-ip (set proxy) |
+Go to http://your-ip:81
+
+Login with:
+
+Email: admin@example.com
+
+Password: changeme
+
+Set up proxy host like:
+
+Domain	Forward To
+chat.yourdomain.com	http://librechat:3080
+mongo.yourdomain.com	http://mongo-express:8081
+redis.yourdomain.com	http://redis-commander:8081
+vector.yourdomain.com	http://qdrant-ui:3000
 
 Use Nginx Proxy Manager to expose services with your own domains and apply SSL.
 
@@ -131,7 +140,7 @@ Feel free to open Issues for bugs, features, or ideas!
 
 ## 📄 License
 
-MIT License © 2025 [Your Name]
+MIT License © 2025 vaheeD
 
 ---
 
