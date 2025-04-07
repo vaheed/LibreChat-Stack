@@ -96,10 +96,12 @@ Password: changeme
 Set up proxy host like:
 
 Domain	Forward To
+```
 chat.yourdomain.com	http://librechat:3080
 mongo.yourdomain.com	http://mongo-express:8081
 redis.yourdomain.com	http://redis-commander:8081
 vector.yourdomain.com	http://qdrant-ui:3000
+```
 
 Use Nginx Proxy Manager to expose services with your own domains and apply SSL.
 
